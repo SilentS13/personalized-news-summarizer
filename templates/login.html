@@ -1,0 +1,41 @@
+{% extends 'base.html' %}
+
+{% block title %}Login - Personalized News Summarizer{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 col-lg-5 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Login</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('login') }}" method="post">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Username</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-user"></i></span>
+                            <input type="text" class="form-control" id="username" name="username" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Password</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-lock"></i></span>
+                            <input type="password" class="form-control" id="password" name="password" required>
+                        </div>
+                    </div>
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-sign-in-alt me-1"></i> Login
+                        </button>
+                        <a href="{{ url_for('register') }}" class="btn btn-outline-secondary">
+                            <i class="fas fa-user-plus me-1"></i> Create an Account
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

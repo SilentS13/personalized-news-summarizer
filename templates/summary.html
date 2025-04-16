@@ -1,0 +1,179 @@
+{% extends 'base.html' %}
+
+{% block title %}
+{% if summary %}
+    {{ summary.title }} - Personalized News Summarizer
+{% else %}
+    Create Summary - Personalized News Summarizer
+{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row">
+    {% if summary %}
+    <!-- Summary Result View -->
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+                <h3 class="mb-0">Summary</h3>
+                <div>
+                    <span class="badge bg-info me-1">{{ summary.summary_length|title }}</span>
+                    <span class="badge bg-secondary">{{ summary.reading_level|title }}</span>
+                </div>
+            </div>
+            <div class="card-body">
+                <h2>{{ summary.title }}</h2>
+                {% if summary.source_url %}
+                <p class="mb-3">
+                    <a href="{{ summary.source_url }}" target="_blank" class="text-decoration-none">
+                        <i class="fas fa-external-link-alt me-1"></i> Original Article
+                    </a>
+                </p>
+                {% endif %}
+                
+                <div class="mb-4">
+                    <h5>Key Topics:</h5>
+                    <div class="mb-3">
+                        {% if summary.key_topics %}
+                            {% for topic in summary.key_topics.split(',') %}
+                                <span class="badge bg-secondary me-1 mb-1">{{ topic }}</span>
+                            {% endfor %}
+                        {% else %}
+                            <span class="badge bg-secondary me-1 mb-1">No topics available</span>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">Summary</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="summary-content">
+                            {{ summary.summarized_text|safe }}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-between">
+                    <a href="{{ url_for('summarize') }}" class="btn btn-primary">
+                        <i class="fas fa-plus me-1"></i> New Summary
+                    </a>
+                    <a href="{{ url_for('profile') }}" class="btn btn-outline-secondary">
+                        <i class="fas fa-user me-1"></i> Back to Profile
+                    </a>
+                </div>
+            </div>
+            <div class="card-footer text-muted">
+                Generated on {{ summary.date_created.strftime('%B %d, %Y at %H:%M') }}
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <!-- Summary Input Form -->
+    <div class="col-lg-8 mx-auto">
+        <div class="card shadow">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Create Summary</h3>
+            </div>
+            <div class="card-body">
+                <form action="{{ url_for('summarize') }}" method="post">
+                    <div class="mb-3">
+                        <label class="form-label">Content Type</label>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="content_type" id="content_type_url" value="url" checked>
+                            <label class="form-check-label" for="content_type_url">URL</label>
+                        </div>
+                        <div class="form-check">
+                            <input class="form-check-input" type="radio" name="content_type" id="content_type_text" value="text">
+                            <label class="form-check-label" for="content_type_text">Text</label>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3" id="url_input_section">
+                        <label for="url_input" class="form-label">Article URL</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-link"></i></span>
+                            <input type="url" class="form-control" id="url_input" name="url_input" placeholder="Enter news article URL">
+                        </div>
+                        <div class="form-text">Enter a URL to a news article you want to summarize</div>
+                    </div>
+                    
+                    <div class="mb-3" id="text_input_section" style="display: none;">
+                        <label for="text_input" class="form-label">Article Text</label>
+                        <textarea class="form-control" id="text_input" name="text_input" rows="6" placeholder="Paste article text here..."></textarea>
+                        <div class="form-text">Paste the full text of the article you want to summarize</div>
+                    </div>
+                    
+                    <div class="mb-3" id="title_section" style="display: none;">
+                        <label for="title" class="form-label">Article Title</label>
+                        <input type="text" class="form-control" id="title" name="title" placeholder="Enter a title for this article">
+                        <div class="form-text">Only needed when pasting text directly</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="summary_length" class="form-label">Summary Length</label>
+                            <select class="form-select" id="summary_length" name="summary_length">
+                                {% for option in summary_length_options %}
+                                    <option value="{{ option.value }}" {% if current_summary_length == option.value %}selected{% endif %}>
+                                        {{ option.label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="reading_level" class="form-label">Reading Level</label>
+                            <select class="form-select" id="reading_level" name="reading_level">
+                                {% for option in reading_level_options %}
+                                    <option value="{{ option.value }}" {% if current_reading_level == option.value %}selected{% endif %}>
+                                        {{ option.label }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="fas fa-magic me-1"></i> Generate Summary
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle content type toggle
+        const urlRadio = document.getElementById('content_type_url');
+        const textRadio = document.getElementById('content_type_text');
+        const urlSection = document.getElementById('url_input_section');
+        const textSection = document.getElementById('text_input_section');
+        const titleSection = document.getElementById('title_section');
+        
+        if (urlRadio && textRadio) {
+            urlRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    urlSection.style.display = 'block';
+                    textSection.style.display = 'none';
+                    titleSection.style.display = 'none';
+                }
+            });
+            
+            textRadio.addEventListener('change', function() {
+                if (this.checked) {
+                    urlSection.style.display = 'none';
+                    textSection.style.display = 'block';
+                    titleSection.style.display = 'block';
+                }
+            });
+        }
+    });
+</script>
+{% endblock %}

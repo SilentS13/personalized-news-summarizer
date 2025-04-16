@@ -1,0 +1,52 @@
+/* Custom Styles for News Summarizer */
+
+/* Interest Highlights */
+.interest-highlight {
+    background-color: rgba(var(--bs-info-rgb), 0.2);
+    padding: 0 3px;
+    border-radius: 3px;
+    font-weight: 500;
+}
+
+/* Interest Checkboxes on Profile Page */
+.interest-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+.interest-checkboxes .form-check {
+    min-width: 120px;
+    padding: 5px 10px;
+    border-radius: 5px;
+    margin: 0;
+    transition: background-color 0.2s;
+}
+
+.interest-selected {
+    background-color: rgba(var(--bs-primary-rgb), 0.1);
+}
+
+/* Summary Content */
+.summary-content {
+    line-height: 1.7;
+    font-size: 1.05rem;
+}
+
+/* Animations */
+.fade-in {
+    animation: fadeIn 0.5s;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .interest-checkboxes .form-check {
+        min-width: 100px;
+    }
+}

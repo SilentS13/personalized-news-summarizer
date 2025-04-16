@@ -1,0 +1,160 @@
+{% extends 'base.html' %}
+
+{% block title %}Profile - Personalized News Summarizer{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-lg-10 mx-auto">
+        <div class="card shadow mb-4">
+            <div class="card-header bg-primary text-white">
+                <h3 class="mb-0">Your Profile</h3>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-5 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Account Information</h5>
+                            </div>
+                            <div class="card-body">
+                                <p><strong>Username:</strong> {{ user.username }}</p>
+                                <p><strong>Email:</strong> {{ user.email }}</p>
+                                <p><strong>Member Since:</strong> {{ user.date_created.strftime('%B %d, %Y') }}</p>
+                                <p><strong>Summaries Created:</strong> {{ summaries|length }}</p>
+                                <a href="{{ url_for('summarize') }}" class="btn btn-primary">
+                                    <i class="fas fa-plus me-1"></i> New Summary
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-7 mb-4">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h5 class="mb-0">Personalization Preferences</h5>
+                            </div>
+                            <div class="card-body">
+                                <form action="{{ url_for('profile') }}" method="post">
+                                    <div class="mb-3">
+                                        <label for="reading_level" class="form-label">Reading Level</label>
+                                        <select class="form-select" id="reading_level" name="reading_level">
+                                            {% for option in reading_level_options %}
+                                                <option value="{{ option.value }}" {% if user.reading_level == option.value %}selected{% endif %}>
+                                                    {{ option.label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="form-text">This affects the complexity of your summaries</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label for="summary_length" class="form-label">Summary Length</label>
+                                        <select class="form-select" id="summary_length" name="summary_length">
+                                            {% for option in summary_length_options %}
+                                                <option value="{{ option.value }}" {% if user.summary_length == option.value %}selected{% endif %}>
+                                                    {{ option.label }}
+                                                </option>
+                                            {% endfor %}
+                                        </select>
+                                        <div class="form-text">This determines how detailed your summaries will be</div>
+                                    </div>
+                                    
+                                    <div class="mb-3">
+                                        <label class="form-label">Areas of Interest</label>
+                                        <div class="interest-checkboxes">
+                                            {% for category in interest_categories %}
+                                                <div class="form-check">
+                                                    <input class="form-check-input" type="checkbox" value="{{ category }}" 
+                                                        id="interest_{{ loop.index }}" name="interests" 
+                                                        {% if category in selected_interests %}checked{% endif %}>
+                                                    <label class="form-check-label" for="interest_{{ loop.index }}">
+                                                        {{ category }}
+                                                    </label>
+                                                </div>
+                                            {% endfor %}
+                                        </div>
+                                        <div class="form-text">Summaries will highlight content related to these topics</div>
+                                    </div>
+                                    
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="fas fa-save me-1"></i> Save Preferences
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h5 class="mb-0">Recent Summaries</h5>
+                    </div>
+                    <div class="card-body">
+                        {% if summaries %}
+                            <div class="table-responsive">
+                                <table class="table table-hover">
+                                    <thead>
+                                        <tr>
+                                            <th>Title</th>
+                                            <th>Date</th>
+                                            <th>Length</th>
+                                            <th>Reading Level</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        {% for summary in summaries %}
+                                            <tr>
+                                                <td>{{ summary.title }}</td>
+                                                <td>{{ summary.date_created.strftime('%Y-%m-%d') }}</td>
+                                                <td>
+                                                    <span class="badge bg-secondary">{{ summary.summary_length|title }}</span>
+                                                </td>
+                                                <td>
+                                                    <span class="badge bg-info">{{ summary.reading_level|title }}</span>
+                                                </td>
+                                                <td>
+                                                    <a href="{{ url_for('view_summary', summary_id=summary.id) }}" class="btn btn-sm btn-primary">
+                                                        <i class="fas fa-eye"></i> View
+                                                    </a>
+                                                </td>
+                                            </tr>
+                                        {% endfor %}
+                                    </tbody>
+                                </table>
+                            </div>
+                        {% else %}
+                            <div class="alert alert-info">
+                                You haven't created any summaries yet. 
+                                <a href="{{ url_for('summarize') }}" class="alert-link">Create your first summary</a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    // Highlight the selected interests for better visibility
+    document.addEventListener('DOMContentLoaded', function() {
+        const interestCheckboxes = document.querySelectorAll('input[name="interests"]');
+        interestCheckboxes.forEach(function(checkbox) {
+            if (checkbox.checked) {
+                checkbox.closest('.form-check').classList.add('interest-selected');
+            }
+            
+            checkbox.addEventListener('change', function() {
+                if (this.checked) {
+                    this.closest('.form-check').classList.add('interest-selected');
+                } else {
+                    this.closest('.form-check').classList.remove('interest-selected');
+                }
+            });
+        });
+    });
+</script>
+{% endblock %}
