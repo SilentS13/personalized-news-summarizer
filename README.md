@@ -2,8 +2,6 @@
 
 A powerful web application that uses AI to generate customized news article summaries based on your interests and reading preferences.
 
-![NewsSum Banner](https://i.ibb.co/dGdjZ1J/news-summarizer-banner.jpg)
-
 ## 🌟 Project Overview
 
 The Personalized News Summarizer is designed to help you save time and focus on content that matters to you. This application provides smart, AI-powered summaries of news articles, academic papers, and other online content, tailored to your personal preferences.
