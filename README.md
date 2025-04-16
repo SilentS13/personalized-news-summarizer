@@ -42,7 +42,7 @@ The Personalized News Summarizer is designed to help you save time and focus on 
 
 ### Step 1: Clone the Repository
 ```bash
-git clone https://github.com/yourusername/personalized-news-summarizer.git
+git clone https://github.com/SilentS13/personalized-news-summarizer.git
 cd personalized-news-summarizer
 ```
 
